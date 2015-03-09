@@ -9,12 +9,24 @@ int potPin = A0;
 
 //Set constants
 int time = 100;
+int fadeTime = 5;
 int lightThreshold = 300;
+
+//Rainbow!
+int red[3] = {255, 0, 0};
+int redgreen[3] = {255, 255, 0};
+int green[3] = {0, 255, 0};
+int greenblue[3] = {0, 255, 255};
+int blue[3] = {0, 0, 255};
+int bluered[3] = {255, 0, 255};
 
 //Initialize state variables
 int potValue;
 int potTime;
 int light;
+int currentR;
+int currentG;
+int currentB;
 
 void setup()
 {
@@ -47,9 +59,12 @@ void loop()
   potTime = map(potValue, 0, 1025, 10, 5000);
 
   //Pint the current light value
-  Serial.println(light);
+  //Serial.println(light);
   
-  fade(
+  int from[] = {0, 0, 0};
+  int to[] = {255, 255, 255};
+  
+  rainbow();
   
 //  if (potTime < 4500)
 //  {
@@ -91,7 +106,7 @@ void loop()
 }
 
 //Turn the lights red
-void red()
+void turnRed()
 {
   analogWrite(redPin, 255);
   analogWrite(greenPin, 0);
@@ -99,7 +114,7 @@ void red()
 }
 
 //Turn the lights green
-void green()
+void turnGreen()
 {
   analogWrite(redPin, 0);
   analogWrite(greenPin, 255);
@@ -107,7 +122,7 @@ void green()
 }
 
 //Turn the lights blue
-void blue()
+void turnBlue()
 {
   analogWrite(redPin, 0);
   analogWrite(greenPin, 0);
@@ -115,7 +130,7 @@ void blue()
 }
 
 //Turn the lights green-blue
-void greenBlue()
+void turnGreenBlue()
 {
   analogWrite(redPin, 0);
   analogWrite(greenPin, 255);
@@ -123,7 +138,7 @@ void greenBlue()
 }
 
 //Turn the lights red-blue
-void redBlue()
+void turnRedBlue()
 {
   analogWrite(redPin, 255);
   analogWrite(greenPin, 0);
@@ -131,7 +146,7 @@ void redBlue()
 }
 
 //Turn the lights white
-void white()
+void turnWhite()
 {
   analogWrite(redPin, 255);
   analogWrite(greenPin, 255);
@@ -139,7 +154,7 @@ void white()
 }
 
 //Turn the lights off
-void off()
+void turnOff()
 {
   analogWrite(redPin, 0);
   analogWrite(greenPin, 0);
@@ -147,46 +162,49 @@ void off()
 }
 
 //Fade from RGB start to RGB finish
-void fade(start, finish)
+void fade(int start[], int finish[])
 {
   //Establish the current RGB values
-  currentR = start[0];
-  currentG = start[1];
-  currentB = start[2];
+  int startR = start[0];
+  int startG = start[1];
+  int startB = start[2];
   
-  //Adjust R until start is equal to finish
-  if start[0] - finish[0] > 0
+  analogWrite(redPin, startR);
+  analogWrite(greenPin, startG);
+  analogWrite(bluePin, startB);
+  
+  int currentR = startR;
+  int currentG = startG;
+  int currentB = startB;
+  
+  int finalR = finish[0];
+  int finalG = finish[1];
+  int finalB = finish[2];
+  
+  int changeR = (startR - finalR)/255;
+  int changeG = (startG - finalG)/255;
+  int changeB = (startB - finalB)/255;
+  
+  for (int x=1; x<256; x++)
   {
-    currentR -= 1;
+    currentR -= changeR;
+    currentG -= changeG;
+    currentB -= changeB;
+    
     analogWrite(redPin, currentR);
-  }
-  else if start[0] - finish[0] < 0
-  {
-    currentR += 1;
-    analogWrite(redPin, currentR);
-  }
-  
-  //Adjust G until start is equal to finish
-  if start[1] - finish[1] > 0
-  {
-    currentG -= 1;
     analogWrite(greenPin, currentG);
-  }
-  else if start[1] - finish[1] < 0
-  {
-    currentG += 1;
-    analogWrite(greenPin, currentG);
-  }
-  
-  //Adjust B until start is equal to finish
-  if start[2] - finish[2] > 0
-  {
-    currentB -= 1;
-    analogWrite(BluePin, currentB);
-  }
-  else if start[2] - finish[2] < 0
-  {
-    currentB += 1;
     analogWrite(bluePin, currentB);
+    
+    delay(fadeTime);
   }
+}
+
+int rainbow()
+{
+  fade(red, redgreen);
+  fade(redgreen, green);
+  fade(green, greenblue);
+  fade(greenblue, blue);
+  fade(blue, bluered);
+  fade(bluered, red);
 }
