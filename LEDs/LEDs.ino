@@ -1,3 +1,19 @@
+#include <IRremote.h>
+
+//Create remote values
+int RECV_PIN = 6;
+IRrecv irrecv(RECV_PIN);
+decode_results results;
+
+//Set remote button values
+bool powerOn = true;
+int remoteDelay = 5;
+
+String currentCode;
+String power = "a80e7e5e";
+String up = "165412B7";
+String down = "5815B090";
+
 //Initialize the RGB pins
 int redPin = 9;
 int greenPin = 10;
@@ -27,14 +43,16 @@ int light;
 int currentR;
 int currentG;
 int currentB;
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 void setup()
 {
+  //Start the IR receiver
+  irrecv.enableIRIn();
+  
   //Set the RGB pins as output pins
   pinMode(redPin, OUTPUT);
   pinMode(greenPin, OUTPUT);  
   pinMode(bluePin, OUTPUT);
-  //pinMode(11, OUTPUT);
   
   //Initialize serial and refresh rate
   Serial.begin(9600);
@@ -45,66 +63,33 @@ void setup()
   analogWrite(bluePin, 0);
   
   //Find initial photo resistor and pot values
-  potTime = map(analogRead(potPin), 0, 1025, 10, 5000);
+  potTime = map(analogRead(potPin), 0, 1025, 0, 1000);
   light = analogRead(photoPin);
 }
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 void loop()
 {
-  //Read in photo resistor and pot values
-  light = analogRead(photoPin);
-  potValue = analogRead(potPin);
+  if (irrecv.decode(&results))
+  {
+    currentCode = String(results.value, HEX);
+    if (currentCode == power)
+    {
+      powerOn = !(powerOn);
+    }
+    irrecv.resume();
+  }
   
-  //Map pot values from 0-1025 to 10-5000
-  potTime = map(potValue, 0, 1025, 10, 5000);
-
-  //Pint the current light value
-  //Serial.println(light);
-  
-  int from[] = {0, 0, 0};
-  int to[] = {255, 255, 255};
-  
-  rainbow();
-  
-//  if (potTime < 4500)
-//  {
-//    if (light < lightThreshold)
-//    {
-//      greenBlue();
-//      potValue = analogRead(potPin);
-//      potTime = map(potValue, 0, 1025, 10, 5000);
-//      //Serial.println(potTime);
-//      delay(potTime);
-//      light = analogRead(photoPin);
-//    }
-//    else
-//    {
-//      light = analogRead(photoPin);
-//      off();
-//      delay(time);
-//    }
-//    if (light < lightThreshold)
-//    {
-//      redBlue();
-//      potValue = analogRead(potPin);
-//      potTime = map(potValue, 0, 1025, 10, 5000);
-//      //Serial.println(potTime);
-//      delay(potTime);
-//      light = analogRead(photoPin);
-//    }
-//    else
-//    {
-//      light = analogRead(photoPin);
-//      off();
-//      delay(time);
-//    }
-//  }
-//  else
-//  {
-//    white();
-//  }
+  if (powerOn)
+  {
+    turnWhite();
+  }
+  else
+  {
+    turnOff();
+  }
+  delay(500);
 }
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 //Turn the lights red
 void turnRed()
 {
@@ -187,6 +172,33 @@ void fade(int start[], int finish[])
   
   for (int x=1; x<256; x++)
   {
+//    if (irrecv.decode(&results))
+//    {
+//      currentCode = String(results.value, HEX);
+//      if (currentCode == power)
+//      {
+//        powerOn = !(powerOn);
+//      }
+//      else if (currentCode == up)
+//      {
+//        remoteDelay ++;
+//      }
+//      else if (currentCode == down)
+//      {
+//        remoteDelay --;
+//        if (remoteDelay <= 0)
+//        {
+//          remoteDelay = 0;
+//        }
+//      }
+//      irrecv.resume();
+//    }
+//    
+//    if (!(powerOn))
+//    {
+//      break;
+//    }
+    
     currentR -= changeR;
     currentG -= changeG;
     currentB -= changeB;
@@ -195,11 +207,18 @@ void fade(int start[], int finish[])
     analogWrite(greenPin, currentG);
     analogWrite(bluePin, currentB);
     
-    delay(fadeTime);
+    Serial.print("R: ");
+    Serial.println(currentR);
+    Serial.print("G: ");
+    Serial.println(currentG);
+    Serial.print("B: ");
+    Serial.println(currentB);
+    
+    delay(100);
   }
 }
 
-int rainbow()
+void rainbow()
 {
   fade(red, redgreen);
   fade(redgreen, green);
@@ -207,4 +226,45 @@ int rainbow()
   fade(greenblue, blue);
   fade(blue, bluered);
   fade(bluered, red);
+}
+
+void GBtoRB()
+{
+  if (potTime < 4500)
+  {
+    if (light < lightThreshold)
+    {
+      turnGreenBlue();
+      potValue = analogRead(potPin);
+      potTime = map(potValue, 0, 1025, 10, 5000);
+      //Serial.println(potTime);
+      delay(potTime);
+      light = analogRead(photoPin);
+    }
+    else
+    {
+      light = analogRead(photoPin);
+      turnOff();
+      delay(time);
+    }
+    if (light < lightThreshold)
+    {
+      turnRedBlue();
+      potValue = analogRead(potPin);
+      potTime = map(potValue, 0, 1025, 10, 5000);
+      //Serial.println(potTime);
+      delay(potTime);
+      light = analogRead(photoPin);
+    }
+    else
+    {
+      light = analogRead(photoPin);
+      turnOff();
+      delay(time);
+    }
+  }
+  else
+  {
+    turnWhite();
+  }
 }
