@@ -6,6 +6,7 @@
 //Fade from RGB start to RGB finish
 void fade(int start[], int finish[])
 {
+  startingState = currentState;
   //Establish the current RGB values
   int startR = start[0];
   int startG = start[1];
@@ -33,21 +34,15 @@ void fade(int start[], int finish[])
   
   //Step by the interval 255 times
   for (int x=1; x<256; x++)
-  {
-    //If the IR receiver sees a button press, set 'current code' to the button code
-    checkPower();
+  { 
+    //If the IR receiver sees a button press, execute the correct action
+    checkButtons();
     
     //If 'powerOn' is false, break the loop
-    if (!powerOn)
+    if (!powerOn | currentState != startingState)
     {
       return;
     }
-    
-    //If up button pressed, increase delay
-    checkUp();
-    
-    //If down button pressed, decrease delay
-    checkDown();
     
     //Change the current RGB by the increment
     currentR -= changeR;
@@ -64,7 +59,7 @@ void fade(int start[], int finish[])
     
     //Reset refresh in x loops
     refresh++;
-    if (recentPress & refresh%100 == 0)
+    if (recentPress & refresh%1000 == 0)
     {
       recentPress = false;
       Serial.println("Refresh in fade");
@@ -77,37 +72,64 @@ void fade(int start[], int finish[])
 void rainbow()
 {
   fade(red, redgreen);
-  if (!powerOn)
+  if (!powerOn | currentState != startingState)
   {
     return;
   }
   
   fade(redgreen, green);
-  if (!powerOn)
+  if (!powerOn | currentState != startingState)
   {
     return;
   }
   
   fade(green, greenblue);
-  if (!powerOn)
+  if (!powerOn | currentState != startingState)
   {
     return;
   }
   
   fade(greenblue, blue);
-  if (!powerOn)
+  if (!powerOn | currentState != startingState)
   {
     return;
   }
   
   fade(blue, bluered);
-  if (!powerOn)
+  if (!powerOn | currentState != startingState)
   {
     return;
   }
   
   fade(bluered, red);
-  if (!powerOn)
+  if (!powerOn | currentState != startingState)
+  {
+    return;
+  }
+}
+
+void RBtoGB()
+{ 
+  fade(bluered, blue);
+  if (!powerOn | currentState != startingState)
+  {
+    return;
+  }
+  
+  fade(blue, greenblue);
+  if (!powerOn | currentState != startingState)
+  {
+    return;
+  }
+  
+  fade(greenblue, blue);
+  if (!powerOn | currentState != startingState)
+  {
+    return;
+  }
+  
+  fade(blue, bluered);
+  if (!powerOn | currentState != startingState)
   {
     return;
   }
