@@ -2,68 +2,88 @@
 //FUNCTIONS FOR READING IR REMOTE BUTTON PRESSES//
 //////////////////////////////////////////////////
 
-
-//Check if the power button was pressed
-void checkPower()
+//Check for all buttons
+void checkButtons()
 {
-  //If the IR receiver sees a button press, set 'current code' to the button code
   if (irrecv.decode(&results))
   {
+    //Define the button value that was pressed
     currentCode = String(results.value, HEX);
+    
     //If power button pressed, toggle power
-    if (currentCode == power & !recentPress)
+    if (currentCode == power)
     {
-      powerOn = !(powerOn);
-      recentPress = true;
-      Serial.println("Toggle power!");
-      Serial.println(powerOn);
-    }
-    //Continue looking for button presses
-    irrecv.resume();
-  }
-}
-
-
-//Check if the up button was pressed
-void checkUp()
-{
-  //If the IR receiver sees a button press, set 'current code' to the button code
-  if (irrecv.decode(&results))
-  {
-    currentCode = String(results.value, HEX);
-    //If up button pressed, increase delay
-    if (currentCode == up & !recentPress)
-    {
-      remoteDelay ++;
-      recentPress = true;
-      Serial.println("Remote delay increased!");
-      Serial.println(remoteDelay);
-    }    
-    //Continue looking for button presses
-    irrecv.resume();
-  }
-}
-
-
-//Check if the down button was pressed
-void checkDown()
-{
-  //If the IR receiver sees a button press, set 'current code' to the button code
-  if (irrecv.decode(&results))
-  {
-    currentCode = String(results.value, HEX);
-    //If down button pressed, decrease delay
-    if (currentCode == down & !recentPress)
-    {
-      remoteDelay --;
-      recentPress = true;
-      Serial.println("Remote delay decreased!");
-      Serial.println(remoteDelay);
-      if (remoteDelay <= 0)
+      currentCode = "penis";
+      Serial.println("Attempting to toggle");
+      if (remoteRefresh%2 == 0)
       {
-        remoteDelay = 0;
+        powerOn = !(powerOn);
+        Serial.println("Toggle power!");
+        Serial.println(powerOn);
       }
-    }    
+      remoteRefresh++;
+    }
+    
+    //If up button pressed, increase fade speed
+    else if (currentCode == up)
+    {
+      if (remoteRefresh%2 == 0 & remoteDelay > 0)
+      {
+        remoteDelay --;
+        Serial.println("Fade speed increased!");
+        Serial.println(remoteDelay);
+      }
+      remoteRefresh++;
+    }
+    
+    //If down button pressed, decrease fade speed
+    else if (currentCode == down)
+    {
+      if (remoteRefresh%2 == 0 & remoteDelay < 20)
+      {
+        remoteDelay ++;
+        Serial.println("Fade speed decreased!");
+        Serial.println(remoteDelay);
+      }
+      remoteRefresh++;
+    }
+    
+    //If one button pressed, set state
+    else if (currentCode == one)
+    {
+      if (remoteRefresh%2 == 0)
+      {
+        currentState = 1;
+        Serial.println("State set to one");
+        Serial.println(currentState);
+      }
+      remoteRefresh++;
+    }
+    
+    //If two button pressed, set state
+    else if (currentCode == two)
+    {
+      if (remoteRefresh%2 == 0)
+      {
+        currentState = 2;
+        Serial.println("State set to two");
+        Serial.println(currentState);
+      }
+      remoteRefresh++;
+    }
+    
+    //If three button pressed, set state
+    else if (currentCode == three)
+    {
+      if (remoteRefresh%2 == 0)
+      {
+        currentState = 3;
+        Serial.println("State set to three");
+        Serial.println(currentState);
+      }
+      remoteRefresh++;
+    }
+    
     //Continue looking for button presses
     irrecv.resume();
   }

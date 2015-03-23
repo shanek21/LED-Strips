@@ -9,30 +9,28 @@ int RECV_PIN = 6;
 IRrecv irrecv(RECV_PIN);
 decode_results results;
 
-//Set remote button values
-bool powerOn = true;
+//Set remote variables
+bool powerOn = false;
 int remoteDelay = 5;
 bool recentPress = false;
 int refresh = 1;
+int remoteRefresh = 0;
 
+int currentState = 1;
 String currentCode;
 String power = "a80e7e5e";
 String up = "165412b7";
 String down = "5815b090";
+String one = "c9767f76";
+String two = "c8155ab1";
+String three = "b6996dae";
 
-//Initialize the RGB pins
+//Initialize the photo resistor, pot, and RGB pins
+int photoPin = A5;
+int potPin = A0;
 int redPin = 9;
 int greenPin = 10;
 int bluePin = 5;
-
-//Initialize the photo resistor and pot pins
-int photoPin = A5;
-int potPin = A0;
-
-//Set constants
-int time = 100;
-int fadeTime = 5;
-int lightThreshold = 300;
 
 //Rainbow!
 int red[3] = {255, 0, 0};
@@ -51,6 +49,12 @@ int light;
 int currentR;
 int currentG;
 int currentB;
+
+//Create light states
+const int whiteState = 1;
+const int RBtoGBState = 2;
+const int rainbowState = 3;
+int startingState;
 //////////////////////////////////////////////////////////////////////////////////////////////////////SETUP
 void setup()
 {
@@ -77,9 +81,7 @@ void setup()
 //////////////////////////////////////////////////////////////////////////////////////////////////////LOOP
 void loop()
 {
-  delay(10);
-  checkPower();
-  delay(10);
+  checkButtons();
   
   if (!powerOn)
   {
@@ -87,15 +89,17 @@ void loop()
   }
   else
   {
-    rainbow();
-  }
-  
-  //Only reset 'recentPress' every x loops
-  refresh++;
-  if (recentPress & refresh%100 == 0)
-  {
-    recentPress = false;
-    Serial.println("Refresh in loop");
+    switch (currentState)
+    {
+      case whiteState:
+        turnWhite();
+        break;
+      case RBtoGBState:
+        RBtoGB();
+        break;
+      case rainbowState:
+        rainbow();
+        break;
+    }
   }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////FUNCTIONS
