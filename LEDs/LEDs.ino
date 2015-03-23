@@ -1,3 +1,7 @@
+///////////////////
+//LED MASTER FILE//
+///////////////////
+
 #include <IRremote.h>
 
 //Create remote values
