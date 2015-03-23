@@ -95,10 +95,3 @@ void loop()
   }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////FUNCTIONS
-//Turn the lights off
-void turnOff()
-{
-  analogWrite(redPin, 0);
-  analogWrite(greenPin, 0);
-  analogWrite(bluePin, 0);
-}

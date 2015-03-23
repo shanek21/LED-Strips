@@ -1,3 +1,9 @@
+//////////////////////////////////////////////////
+//FUNCTIONS FOR READING IR REMOTE BUTTON PRESSES//
+//////////////////////////////////////////////////
+
+
+//Check if the power button was pressed
 void checkPower()
 {
   //If the IR receiver sees a button press, set 'current code' to the button code
@@ -17,6 +23,8 @@ void checkPower()
   }
 }
 
+
+//Check if the up button was pressed
 void checkUp()
 {
   //If the IR receiver sees a button press, set 'current code' to the button code
@@ -36,6 +44,8 @@ void checkUp()
   }
 }
 
+
+//Check if the down button was pressed
 void checkDown()
 {
   //If the IR receiver sees a button press, set 'current code' to the button code
