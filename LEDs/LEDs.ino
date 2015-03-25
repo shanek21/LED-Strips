@@ -1,29 +1,33 @@
-///////////////////
-//LED MASTER FILE//
-///////////////////
+////////////////////////
+////LED MASTER FILE/////
+////////////////////////
 
 #include <IRremote.h>
 
-//Create remote values
+//Create remote object and sensor pin
 int RECV_PIN = 6;
 IRrecv irrecv(RECV_PIN);
 decode_results results;
 
-//Set remote variables
+//Set initial state of lights
 bool powerOn = false;
-int remoteDelay = 5;
-bool recentPress = false;
-int refresh = 1;
-int remoteRefresh = 0;
-
 int currentState = 1;
+
+//Define IR remote button codes
 String currentCode;
-String power = "a80e7e5e";
-String up = "165412b7";
-String down = "5815b090";
-String one = "c9767f76";
-String two = "c8155ab1";
-String three = "b6996dae";
+const String SAFE = "safe";
+const String POWER = "a80e7e5e";
+String UP = "165412b7";
+String DOWN = "5815b090";
+String ONE = "c9767f76";
+String TWO = "c8155ab1";
+String THREE = "b6996dae";
+String REWIND = "e6d07133";
+String PLAY = "9a6f0576";
+String FASTFORWARD = "9b72c267";
+String RECORD = "81a840e6";
+String PAUSE = "d049e0a6";
+String STOP = "fbad8623";
 
 //Initialize the photo resistor, pot, and RGB pins
 int photoPin = A5;
@@ -32,7 +36,24 @@ int redPin = 9;
 int greenPin = 10;
 int bluePin = 5;
 
-//Rainbow!
+//Initialize state variables
+int potValue;
+int potTime;
+int light;
+int currentR;
+int currentG;
+int currentB;
+String gameState;
+long randNumber;
+int patienceReset;
+int patience;
+int score;
+int patienceResetIncrement = 50;
+int gameDelay = 5;
+int remoteDelay = 5;
+int remoteRefresh = 0;
+
+//Define RGB states
 int red[3] = {255, 0, 0};
 int redgreen[3] = {255, 255, 0};
 int green[3] = {0, 255, 0};
@@ -42,19 +63,14 @@ int bluered[3] = {255, 0, 255};
 int white[3] = {255, 255, 255};
 int off[3] = {0, 0, 0};
 
-//Initialize state variables
-int potValue;
-int potTime;
-int light;
-int currentR;
-int currentG;
-int currentB;
-
 //Create light states
 const int whiteState = 1;
 const int RBtoGBState = 2;
 const int rainbowState = 3;
+const int easterState = 4;
 int startingState;
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////SETUP
 void setup()
 {
@@ -68,25 +84,20 @@ void setup()
   
   //Initialize serial and refresh rate
   Serial.begin(9600);
-  
-  //Turn lights off by default
-  analogWrite(redPin, 0);
-  analogWrite(greenPin, 0);
-  analogWrite(bluePin, 0);
-  
-  //Find initial photo resistor and pot values
-//  potTime = map(analogRead(potPin), 0, 1025, 0, 1000);
-//  light = analogRead(photoPin);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////LOOP
 void loop()
 {
+  //Check for IR remote input
   checkButtons();
   
+  //Check if lights should be off
   if (!powerOn)
   {
     turnOff();
   }
+  
+  //Check which state lights should be in
   else
   {
     switch (currentState)
@@ -99,6 +110,10 @@ void loop()
         break;
       case rainbowState:
         rainbow();
+        break;
+      case easterState:
+        easter();
+        currentState = whiteState;
         break;
     }
   }

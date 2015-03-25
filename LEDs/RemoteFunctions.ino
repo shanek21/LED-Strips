@@ -5,15 +5,15 @@
 //Check for all buttons
 void checkButtons()
 {
+  //If IR remote input is detected
   if (irrecv.decode(&results))
   {
     //Define the button value that was pressed
     currentCode = String(results.value, HEX);
     
     //If power button pressed, toggle power
-    if (currentCode == power)
+    if (currentCode == POWER)
     {
-      currentCode = "penis";
       Serial.println("Attempting to toggle");
       if (remoteRefresh%2 == 0)
       {
@@ -25,7 +25,7 @@ void checkButtons()
     }
     
     //If up button pressed, increase fade speed
-    else if (currentCode == up)
+    else if (currentCode == UP)
     {
       if (remoteRefresh%2 == 0 & remoteDelay > 0)
       {
@@ -37,7 +37,7 @@ void checkButtons()
     }
     
     //If down button pressed, decrease fade speed
-    else if (currentCode == down)
+    else if (currentCode == DOWN)
     {
       if (remoteRefresh%2 == 0 & remoteDelay < 20)
       {
@@ -49,7 +49,7 @@ void checkButtons()
     }
     
     //If one button pressed, set state
-    else if (currentCode == one)
+    else if (currentCode == ONE)
     {
       if (remoteRefresh%2 == 0)
       {
@@ -61,7 +61,7 @@ void checkButtons()
     }
     
     //If two button pressed, set state
-    else if (currentCode == two)
+    else if (currentCode == TWO)
     {
       if (remoteRefresh%2 == 0)
       {
@@ -73,7 +73,7 @@ void checkButtons()
     }
     
     //If three button pressed, set state
-    else if (currentCode == three)
+    else if (currentCode == THREE)
     {
       if (remoteRefresh%2 == 0)
       {
@@ -84,7 +84,51 @@ void checkButtons()
       remoteRefresh++;
     }
     
+    //If the play button is pressed... well... just don't press it
+    else if (currentCode == REWIND)
+    {
+      if (remoteRefresh%2 == 0)
+      {
+        gameState = "red";
+      }
+      remoteRefresh++;
+    }
+    
+    //If the play button is pressed... well... just don't press it
+    else if (currentCode == PLAY)
+    {
+      if (remoteRefresh%2 == 0)
+      {
+        currentState = easterState;
+        gameState = "green";
+      }
+      remoteRefresh++;
+    }
+    
+    //If the fastforward button is pressed... well... just don't press it
+    else if (currentCode == FASTFORWARD)
+    {
+      if (remoteRefresh%2 == 0)
+      {
+        gameState = "blue";
+      }
+      remoteRefresh++;
+    }
+    
     //Continue looking for button presses
     irrecv.resume();
   }
+}
+
+//Hmm... I'm not sure what this does...
+void buttonsCheck()
+{
+  //If IR remote input is detected
+  if (irrecv.decode(&results))
+  {
+    //Define the button value that was pressed
+    currentCode = String(results.value, HEX);
+  }
+  //Continue looking for button presses
+  irrecv.resume();
 }
