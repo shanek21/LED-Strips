@@ -84,6 +84,18 @@ void checkButtons()
       remoteRefresh++;
     }
     
+    //If four button pressed, set state
+    else if (currentCode == FOUR)
+    {
+      if (remoteRefresh%2 == 0)
+      {
+        currentState = 4;
+        Serial.println("State set to four");
+        Serial.println(currentState);
+      }
+      remoteRefresh++;
+    }
+    
     //If the play button is pressed... well... just don't press it
     else if (currentCode == REWIND)
     {

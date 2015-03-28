@@ -391,8 +391,8 @@ void displayScore()
   for (score; score > 0; score--)
   {
     turnWhite();
-    delay(100);
+    delay(300);
     turnOff();
-    delay(100);
+    delay(300);
   }
 }
