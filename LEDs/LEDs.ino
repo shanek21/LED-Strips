@@ -22,6 +22,7 @@ String DOWN = "5815b090";
 String ONE = "c9767f76";
 String TWO = "c8155ab1";
 String THREE = "b6996dae";
+String FOUR = "969ae844";
 String REWIND = "e6d07133";
 String PLAY = "9a6f0576";
 String FASTFORWARD = "9b72c267";
@@ -67,7 +68,8 @@ int off[3] = {0, 0, 0};
 const int whiteState = 1;
 const int RBtoGBState = 2;
 const int rainbowState = 3;
-const int easterState = 4;
+const int redState = 4;
+const int easterState = 10;
 int startingState;
 
 
@@ -110,6 +112,9 @@ void loop()
         break;
       case rainbowState:
         rainbow();
+        break;
+      case redState:
+        turnRed();
         break;
       case easterState:
         easter();
