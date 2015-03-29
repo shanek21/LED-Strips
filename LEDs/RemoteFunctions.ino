@@ -96,6 +96,30 @@ void checkButtons()
       remoteRefresh++;
     }
     
+    //If zero button pressed, decrease brightness
+    else if (currentCode == ZERO)
+    {
+      if (remoteRefresh%2 == 0 & remoteDelay > 0 & brightness >= 5)
+      {
+        brightness -= 5;
+        Serial.println("Brightness decreased!");
+        Serial.println(brightness);
+      }
+      remoteRefresh++;
+    }
+    
+    //If eight button pressed, increase brightness
+    else if (currentCode == EIGHT)
+    {
+      if (remoteRefresh%2 == 0 & remoteDelay > 0 & brightness <= 250)
+      {
+        brightness += 5;
+        Serial.println("Brightness increased!");
+        Serial.println(brightness);
+      }
+      remoteRefresh++;
+    }
+    
     //If the play button is pressed... well... just don't press it
     else if (currentCode == REWIND)
     {

@@ -209,6 +209,15 @@ void turnWhite()
 }
 
 
+//Turn the lights a shade of white
+void turnWhiteShade(int shade)
+{
+  analogWrite(redPin, shade);
+  analogWrite(greenPin, shade);
+  analogWrite(bluePin, shade);
+}
+
+
 //Turn the lights off
 void turnOff()
 {

@@ -12,6 +12,7 @@ decode_results results;
 //Set initial state of lights
 bool powerOn = false;
 int currentState = 1;
+int brightness = 255;
 
 //Define IR remote button codes
 String currentCode;
@@ -19,10 +20,14 @@ const String SAFE = "safe";
 const String POWER = "a80e7e5e";
 String UP = "165412b7";
 String DOWN = "5815b090";
+String LEFT = "776c6e7a";
+String RIGHT = "22d912bb";
 String ONE = "c9767f76";
 String TWO = "c8155ab1";
 String THREE = "b6996dae";
 String FOUR = "969ae844";
+String EIGHT = "55f2b93";
+String ZERO = "f32f72d7";
 String REWIND = "e6d07133";
 String PLAY = "9a6f0576";
 String FASTFORWARD = "9b72c267";
@@ -105,7 +110,7 @@ void loop()
     switch (currentState)
     {
       case whiteState:
-        turnWhite();
+        turnWhiteShade(brightness);
         break;
       case RBtoGBState:
         RBtoGB();
@@ -114,7 +119,7 @@ void loop()
         rainbow();
         break;
       case redState:
-        turnRed();
+        turnRedShade(brightness);
         break;
       case easterState:
         easter();
