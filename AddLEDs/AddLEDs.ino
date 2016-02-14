@@ -12,36 +12,59 @@
 //   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
 //   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
 //   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(60, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(150, PIN, NEO_GRB + NEO_KHZ800);
 
 // IMPORTANT: To reduce NeoPixel burnout risk, add 1000 uF capacitor across
 // pixel power leads, add 300 - 500 Ohm resistor on first pixel's data input
 // and minimize distance between Arduino and first pixel.  Avoid connecting
 // on a live circuit...if you must, connect GND first.
 
+char input = '0';
+
 void setup() {
+  Serial.begin(9600);
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
 }
 
 void loop() {
-  // strip.setPixelColor(149, strip.Color(255, 0, 0));
-  // strip.show();
+  if (Serial.available()) {
+    input = Serial.read();
+    Serial.println(input);
+  }
+  
+  switch(input) {
+    case '1':
+      colorWipe(strip.Color(255, 0, 0), 1); // Red
+      input = '9';
+      break;
+    case '2':
+      colorWipe(strip.Color(0, 255, 0), 1); // Green
+      input = '9';
+      break;
+    case '3':
+      colorWipe(strip.Color(0, 0, 255), 1); // Blue
+      input = '9';
+      break;
+    case '9':
+      break;
+  }
+  //strip.setPixelColor(100, strip.Color(255, 0, 0));
+  //strip.show();
   // Some example procedures showing how to display to the pixels:
-  // colorWipe(strip.Color(255, 0, 0), 50); // Red
+  //colorWipe(strip.Color(255, 0, 0), 20); // Red
   // colorWipe(strip.Color(0, 0, 0), 50);
-  // colorWipe(strip.Color(0, 255, 0), 50); // Green
-  // colorWipe(strip.Color(0, 0, 255), 50); // Blue
+  //colorWipe(strip.Color(0, 255, 0), 20); // Green
+  //colorWipe(strip.Color(0, 0, 255), 20); // Blue
   // // Send a theater pixel chase in...
   // theaterChase(strip.Color(127, 127, 127), 50); // White
-  // theaterChase(strip.Color(127, 0, 0), 50); // Red
+  //theaterChase(strip.Color(127, 0, 0), 50); // Red
   // theaterChase(strip.Color(0, 0, 127), 50); // Blue
 
-  // rainbow(5);
-  // rainbowCycle(20);
-  // theaterChaseRainbow(50);
-  // test(strip.Color(0, 0, 255));
-
+  //rainbow(5);
+  //rainbowCycle(20);
+  //theaterChaseRainbow(40);
+  //test(strip.Color(100, 100, 100));
 }
 
 void test(uint32_t color) {
